@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "apple_bundle_id": "com.nexora.alpha.ios",
+  "google_package_id": "",
+  "countries": [
+    "ES",
+    "PL",
+    "GB",
+    "US"
+  ],
+  "note": "Use the production Apple bundle ID and Google Play package ID when published. Empty Google package means safe skip, not a guessed store link."
+}
