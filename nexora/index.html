@@ -35,14 +35,14 @@ h1{font-size:clamp(43px,8vw,95px);line-height:1.035;letter-spacing:-.065em;margi
 .feature .emoji{font-size:27px;margin-bottom:15px}.feature h2{font-size:19px;margin:0 0 9px}.feature p{font-size:15px;color:#b6cee5;line-height:1.55;margin:0}
 .languages{color:#a3cfe7;text-align:center;font-size:13px;letter-spacing:.04em;padding:0 20px 25px}
 footer{text-align:center;color:#7f9db9;font-size:12px;border-top:1px solid #ffffff12;padding:25px 20px 40px}
-@media(max-width:690px){nav{padding:20px 18px}section.hero{padding:50px 18px 15px}.world{transform:scale(.78);transform-origin:center bottom;margin-top:0;height:233px}.features{grid-template-columns:1fr;gap:12px;margin-top:0}.feature{min-height:unset}.intro{font-size:18px}.tagline{letter-spacing:.14em}}
+.download-links{display:flex;justify-content:center;gap:12px;align-items:center;flex-wrap:wrap;margin:-16px auto 28px}.download-links[hidden],.download-links a[hidden]{display:none}.download-links a{display:inline-block;text-decoration:none;font-size:15px;font-weight:800;background:#ffffff;color:#0b2440;border-radius:12px;padding:14px 17px;box-shadow:0 7px 30px #56e3ff24}.download-links a:hover{background:#bdefff}.status-note{max-width:610px;margin:-14px auto 25px;color:#8fbbd0;font-size:13px;line-height:1.6}.store strong{font-weight:900;color:#6cf0bc}\n@media(max-width:690px){nav{padding:20px 18px}section.hero{padding:50px 18px 15px}.world{transform:scale(.78);transform-origin:center bottom;margin-top:0;height:233px}.features{grid-template-columns:1fr;gap:12px;margin-top:0}.feature{min-height:unset}.intro{font-size:18px}.tagline{letter-spacing:.14em}}
 </style></head><body>
 <nav><div class="brand">NEX<span>O</span>RA</div><div class="mini">COMING SOON</div></nav>
 <main><section class="hero">
 <p class="tagline">One world · Many languages · One conversation</p>
 <h1>Speak your language.<br/><strong>Hear theirs as yours.</strong></h1>
 <p class="intro">With NEXORA, people can communicate across languages in real time. You speak in your own language. The other person hears the conversation in theirs.</p>
-<div class="store"><span class="soon">Coming soon</span> <span> Apple App Store</span> <span>·</span> <span>Google Play</span></div>
+<div class="store" id="store-status" role="status" aria-live="polite"><span class="soon">Coming soon</span><span> App Store</span><span>·</span><span>Google Play</span></div><div id="download-links" class="download-links" hidden><a id="apple-link" href="#" rel="noopener noreferrer" target="_blank" hidden> Download on the App Store</a><a id="google-link" href="#" rel="noopener noreferrer" target="_blank" hidden>Get it on Google Play</a></div><p class="status-note">One QR code, forever. When NEXORA launches in the stores, this page updates automatically. Check back soon!</p>
 <div class="world" aria-label="Three friendly pixel-style characters talking in different languages">
 <div class="avatar"><div class="head"></div><div class="hair"></div><div class="body"></div><div class="leg"></div><div class="arm"></div><div class="phone"></div><div class="bubble">Hola!</div></div>
 <div class="avatar"><div class="head"></div><div class="hair"></div><div class="body"></div><div class="leg"></div><div class="arm"></div><div class="phone"></div><div class="bubble">Hello!</div></div>
@@ -55,4 +55,36 @@ footer{text-align:center;color:#7f9db9;font-size:12px;border-top:1px solid #ffff
 </div>
 <p class="languages">ENGLISH · ESPAÑOL · POLSKI · DEUTSCH · FRANÇAIS · 中文 · AND MORE</p></main>
 <footer>NEXORA · A world without language barriers · App launch updates coming soon</footer>
-</body></html>
+<script>
+(function () {
+  "use strict";
+  const banner = document.getElementById("store-status");
+  const links = document.getElementById("download-links");
+  const apple = document.getElementById("apple-link");
+  const google = document.getElementById("google-link");
+  const valid = (value, host) => {
+    try {
+      const u = new URL(value);
+      return u.protocol === "https:" && u.hostname === host;
+    } catch (_e) { return false; }
+  };
+  async function refreshStores() {
+    try {
+      const response = await fetch("./release-status.json?t=" + Date.now(), {cache:"no-store"});
+      if (!response.ok) return;
+      const status = await response.json();
+      const a = Boolean(status.app_store?.available && valid(status.app_store?.url,"apps.apple.com"));
+      const g = Boolean(status.google_play?.available && valid(status.google_play?.url,"play.google.com"));
+      apple.hidden = !a; google.hidden = !g;
+      if (a) apple.href = status.app_store.url;
+      if (g) google.href = status.google_play.url;
+      links.hidden = !(a || g);
+      if (a && g) banner.innerHTML = '<strong>NOW AVAILABLE</strong><span> App Store &amp; Google Play</span>';
+      else if (a) banner.innerHTML = '<strong>NOW ON THE APP STORE</strong><span>Google Play coming soon</span>';
+      else if (g) banner.innerHTML = '<strong>NOW ON GOOGLE PLAY</strong><span>App Store coming soon</span>';
+    } catch (_e) { /* Keep the coming-soon state if offline. */ }
+  }
+  refreshStores();
+  setInterval(refreshStores, 60000);
+})();
+</script></body></html>
