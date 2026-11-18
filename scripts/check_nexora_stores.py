@@ -49,7 +49,7 @@ def play_url(package_id: str, countries: list[str]) -> str | None:
     if not package_id:
         print("Google Play: no verified package ID configured; not guessing.")
         return None
-    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)+", package_id):
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)+", package_id):
         print("Invalid Android package ID; skip.", file=sys.stderr)
         return None
     for country in countries:
