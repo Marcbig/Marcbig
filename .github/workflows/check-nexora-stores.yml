@@ -1,0 +1,30 @@
+name: Check NEXORA public store availability
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - 'nexora/store-config.json'
+      - 'scripts/check_nexora_stores.py'
+      - '.github/workflows/check-nexora-stores.yml'
+permissions:
+  contents: write
+jobs:
+  detect-stores:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check exact Apple bundle ID and Android package ID
+        run: python3 scripts/check_nexora_stores.py
+      - name: Publish verified store availability
+        run: |
+          if git diff --quiet -- nexora/release-status.json; then
+            echo "No new store listings"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add nexora/release-status.json
+          git commit -m "NEXORA: detected public mobile store availability"
+          git push
