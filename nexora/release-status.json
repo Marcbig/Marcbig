@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "updated_at": null,
+  "app_store": {
+    "available": false,
+    "url": null
+  },
+  "google_play": {
+    "available": false,
+    "url": null
+  },
+  "message": "Coming soon to the App Store and Google Play."
+}
